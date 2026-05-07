@@ -61,7 +61,7 @@ TWCC_MAX_RETRY=2
 TWCC_MAX_CONCURRENT=10
 ```
 
-> API 金鑰請至 [台智雲 AFS](https://afs.twcc.ai) 的「公用模式 - API 金鑰管理」頁面取得。
+> API 金鑰請至 [台智雲 AFS](https://reurl.cc/3km1yj) 的「公用模式 - API 金鑰管理」頁面取得。
 
 ---
 
