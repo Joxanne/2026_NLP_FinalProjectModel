@@ -10,6 +10,7 @@
 - **互動式問答**：在終端機輸入問題，即時獲得 LLM 回答
 - **批次推論**：讀入 CSV（欄位：`題目`），輸出包含答案的 CSV（欄位：`題目`, `答案`）
 - **課程資料注入**：自動讀取 `data/NLP-Course-Info.csv` 與 `data/slides/` 投影片，組成系統提示詞
+- **多 LLM 支援**：透過 `LLM_PROVIDER` 切換台智雲 AFS（TWCC）或 Google Gemini
 
 ---
 
@@ -20,7 +21,7 @@ retrieval-system/
 ├── main.py              # 互動式終端機問答
 ├── batch_infer.py       # 批次推論（輸入/輸出 CSV）
 ├── src/
-│   ├── llm_client.py    # OpenAI 相容 API 封裝（台智雲 AFS）
+│   ├── llm_client.py    # LLM 封裝（台智雲 AFS / Google Gemini）
 │   └── prompt_builder.py# 系統提示詞建構
 ├── data/
 │   ├── NLP-Course-Info.csv  # 課程 Q&A 資料
@@ -50,9 +51,22 @@ pip install -r requirements.txt
 cp .env.example .env
 ```
 
-編輯 `.env`：
+編輯 `.env`，並依需求選擇 LLM 提供者：
+
+**使用 Google Gemini：**
 
 ```
+LLM_PROVIDER=gemini
+GEMINI_API_KEY=你的-Gemini-API-KEY
+GEMINI_MODEL=gemini-3-flash-preview
+```
+
+> Gemini API 金鑰請至 [Google AI Studio](https://aistudio.google.com/) 申請。
+
+**使用台智雲 AFS（TWCC）：**
+
+```
+LLM_PROVIDER=twcc
 TWCC_API_KEY=你的-API-KEY
 TWCC_API_URL=https://api-ams.twcc.ai/api
 TWCC_MODEL=llama3.3-ffm-70b-32k-chat
@@ -61,7 +75,7 @@ TWCC_MAX_RETRY=2
 TWCC_MAX_CONCURRENT=10
 ```
 
-> API 金鑰請至 [台智雲 AFS](2026雙北程式設計節競賽工作坊 模型使用說明簡報.pdf) 的步驟申請取得。
+> TWCC API 金鑰請至 [台智雲 AFS](2026雙北程式設計節競賽工作坊 模型使用說明簡報.pdf) 的步驟申請取得。
 
 ---
 
@@ -112,7 +126,8 @@ python batch_infer.py input.csv output.csv
 
 | 元件 | 說明 |
 |------|------|
-| LLM | 台智雲 AFS `llama3.3-ffm-70b-32k-chat` |
-| API | OpenAI 相容介面（`openai` Python SDK） |
+| LLM（TWCC） | 台智雲 AFS `llama3.3-ffm-70b-32k-chat` |
+| LLM（Gemini） | Google Gemini（預設 `gemini-2.0-flash`） |
+| API | OpenAI 相容介面（TWCC）／`google-genai` SDK（Gemini） |
 | 提示詞策略 | System Prompt 注入課程資料 |
 | 批次並行 | `asyncio.Semaphore` 控制並行數 |
